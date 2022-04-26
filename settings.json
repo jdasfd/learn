@@ -1,0 +1,57 @@
+{
+    "files.eol": "\n",
+    "editor.largeFileOptimizations": false,
+    "security.workspace.trust.untrustedFiles": "open",
+    "workbench.colorTheme": "Default Dark+",
+    "workbench.editor.autoLockGroups": {},
+    "local-history.path": "/mnt/c/Users/59717/.vscode/history",
+    "editor.wordWrap": "on",
+    "background.customImages": [
+        "file:///C:/Users/59717/back3.jpg",
+        "file:///C:/Users/59717/back2.jpg",
+        "file:///C:/Users/59717/back.jpg"
+    ],
+    "background.enabled": true,
+    "background.styles": [
+        {
+            "content":"''",
+            "pointer-events":"none",
+            "position":"absolute",
+            "bottom":"-60px",
+            "width":"100%",
+            "height":"110%",
+            "z-index":"99999",
+            "opacity":0.3,
+            "background-position":"center"
+        },
+        {
+            "content":"''",
+            "pointer-events":"none",
+            "position":"absolute",
+            "bottom":"-60px",
+            "width":"100%",
+            "height":"100%",
+            "z-index":"99999",
+            "opacity":0.2,
+            "background-position":"center",
+            "background-size":"cover"
+        },
+        {
+            "content":"''",
+            "pointer-events":"none",
+            "position":"absolute",
+            "bottom":"-60px",
+            "width":"100%",
+            "height":"100%",
+            "z-index":"99999",
+            "opacity":0.1,
+            "background-position":"center",
+            "background-size":"cover"
+        }
+    ],
+    "background.useDefault": false,
+    "background.useFront": false,
+    "background.loop": true,
+    "backgroundCover.imagePath": "c:\\Users\\59717\\back4.jpg",
+    "backgroundCover.opacity": 0.1,
+}
