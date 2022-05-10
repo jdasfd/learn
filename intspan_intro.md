@@ -23,8 +23,6 @@ species.chromosome(strand):start-end
 
 ## spanr 使用说明
 
-`spanr`
-
 tests文件请参考[IntSpan](https://github.com/wang-q/intspan)
 
 - spanr genome
@@ -96,7 +94,7 @@ spanr cover tests/spanr/dazzname.ranges
 infile_0/1/0_514: 19-499
 ```
 
-`spanr cover`可以用来统计一个染色体上被覆盖的基因范围，集合中会忽略链特异性以及物种的备注名称，如`|Species=Yeast`会被忽略。
+`spanr cover`可以用来统计一个染色体上被覆盖的基因长度，即`covered length/all length`的比例，集合中会忽略链特异性以及物种的备注名称，如`|Species=Yeast`会被忽略。
 
 - spanr gff
 
@@ -146,6 +144,7 @@ spanr span --op fill -n 3000 tests/spanr/brca2.yml
 # --n
 ```
 
+```txt
 List of operations
     cover:  a single span from min to max
     holes:  all the holes in runlist
@@ -153,6 +152,7 @@ List of operations
     pad:    add N integers from each end of each span of runlist
     excise: remove all spans smaller than N
     fill:   fill in all holes smaller than or equals to N
+```
 
 `spanr span` 可以对`yml`中的范围进行操作。
 `cover` 会提取`yml`中同一个区间上从最小到最大的一个单一范围区间。
@@ -162,7 +162,7 @@ List of operations
 `excise` 会过滤掉那些区间总长小于N的区间
 `fill` 当某个差集区间总长小于N时，会忽略这些区间，并且输出补上这些区间后的结果
 
--spanr compare
+- spanr compare
 
 ```bash
 spanr compare \
@@ -192,4 +192,69 @@ XVI: "-"
 
 对两个`yml`进行比较，可以求`intersect`交集，`union`并集，`diff`差集，和`xor`异或的运算。
 
+xor definition:
+
 $A \Delta B = (A - B) \cup (B-A) = (A \cup B) - (A \cap B)$
+
+- spanr convert
+
+```bash
+cat tests/spanr/repeat.yml
+---
+I: "-"
+II: 327069-327703
+III: "-"
+IV: 512988-513590,757572-759779,802895-805654,981142-987119,1017673-1018183,1175134-1175738,1307621-1308556,1504223-1504728
+IX: "-"
+V: 354135-354917
+VI: "-"
+VII: 778784-779515,878539-879235
+VIII: 116405-117059,133581-134226
+X: 366757-367499,712641-713226
+XI: 162831-163399
+XII: 64067-65208,91960-92481,451418-455181,455933-457732,460517-464318,465070-466869,489753-490545,817840-818474
+XIII: 609100-609861
+XIV: "-"
+XV: 437522-438484
+XVI: 560481-561065
+
+spanr convert tests/spanr/repeat.yml | head -n 5
+II:327069-327703
+IV:512988-513590
+IV:757572-759779
+IV:802895-805654
+IV:981142-987119
+```
+
+`spanr convert`能够把区间文件`yml`转换成类似bed形式的范围格式。
+
+- spanr range
+
+```bash
+cat cat tests/spanr/S288c.ranges
+I:1-100
+I(+):90-150
+S288c.I(-):190-200
+II:21294-22075
+II:23537-24097
+S288c.I(-):190-200|Species=Yeast
+
+spanr range --op overlap tests/spanr/intergenic.yml tests/spanr/S288c.ranges
+II:21294-22075
+II:23537-24097
+
+spanr range --op non-overlap tests/spanr/intergenic.yml tests/spanr/S288c.rang
+es
+I:1-100
+I(+):90-150
+S288c.I(-):190-200
+S288c.I(-):190-200|Species=Yeast
+
+# --op <op>: operations: overlap, non-overlap or superset [default: overlap]
+```
+
+`spanr range`可以根据`yml`中的范围，来确定`ranges`中被覆盖或没被覆盖的区域
+
+overlap: `.range`文件中被`yml`覆盖到的区域
+
+non-overlap: `.range`中没被`yml`覆盖的区域
