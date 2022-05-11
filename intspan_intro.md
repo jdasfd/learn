@@ -187,8 +187,11 @@ XIV: "-"
 XV: "-"
 XVI: "-"
 
+# Only the *first* file can contain multiple sets of runlists
 # --op <op>: Operations: intersect, union, diff or xor [default: intersect]
 ```
+
+第一个集合相对更大一些
 
 对两个`yml`进行比较，可以求`intersect`交集，`union`并集，`diff`差集，和`xor`异或的运算。
 
