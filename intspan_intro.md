@@ -231,7 +231,7 @@ IV:981142-987119
 - spanr range
 
 ```bash
-cat cat tests/spanr/S288c.ranges
+cat tests/spanr/S288c.ranges
 I:1-100
 I(+):90-150
 S288c.I(-):190-200
