@@ -1,4 +1,4 @@
-#  Faops manuscript
+# Faops manuscript
 
 ```bash
 faops is a lightweight tool for operating sequences in the fasta format.
@@ -34,11 +34,11 @@ Options:
 
 ```
 
-##  Examples
+## Examples
 
-test file downloaded from https://github.com/wang-q/faops
+test file downloaded from <https://github.com/wang-q/faops>
 
-for every > is separated 
+for every > is separated
 
 * Count base statistics in FA file(s)
 
@@ -184,4 +184,4 @@ for every > is separated
   faops rc ufasta.fa 2.fa
   ```
 
-* 
+*
