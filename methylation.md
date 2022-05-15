@@ -1,4 +1,12 @@
-# Methylation learning
+# Methylation Learning
+
+## Data Preparation
+
+- Software Preparation
+
+```bash
+brew install wang-q/tap/bismark
+```
 
 - Data Download
 
@@ -35,7 +43,7 @@ aria2c -j 4 -x 4 -s 2 --file-allocation=none -c -i ena_info.ftp.txt
 mkdir -p /mnt/e/methy/genome
 cd /mnt/e/methy/genome
 
-AD=AD=ftp://ftp.ensembl.org/pub/release-106/fasta/mus_musculus/dna/Mus_musculus.GRCm39.dna.chromosome.
+AD=ftp://ftp.ensembl.org/pub/release-106/fasta/mus_musculus/dna/Mus_musculus.GRCm39.dna.chromosome.
 for num in {1..19} MT X Y
 do
 echo "$AD$num.fa.gz" >> genome_info.ftp.txt
@@ -44,16 +52,18 @@ done
 aria2c -j 2 -s 2 --file-allocation=none -c -i genome_info.ftp.txt
 ```
 
-- Quality control and trimming
+## Quality control and trimming
+
+Using `fastqc` and `trim_galore` to do the quality control and adapter trimming.
 
 ```bash
-mkdir -p /mnt/e/methy/fastqc
+mkdir /mnt/e/methy/fastqc
 cd /mnt/e/methy/fastqc
 mkdir raw trimmed
-mkdir -p /mnt/e/methy/trim
+mkdir /mnt/e/methy/trim
 ```
 
-Quality of raw seq-data.
+- Quality control of raw seq-data
 
 ```bash
 cd /mnt/e/methy/ena
@@ -61,4 +71,44 @@ cd /mnt/e/methy/ena
 parallel -j 3 " \
 fastqc --threads 4 --quiet -o ../fastqc/raw {} \
 " ::: $(ls *.fastq.gz)
+```
+
+- Trimming
+
+```bash
+cd /mnt/e/methy/ena
+
+parallel -j 3 " \
+trim_galore -j 4 \
+--fastqc --output_dir ../trim {} \
+--suppress_warn \
+" ::: $(ls *.fastq.gz)
+
+cd /mnt/e/methy/trim
+mv *.txt *.html ../fastqc/trimmed/
+```
+
+The adapter were all removed by `trim_galore`.
+
+## Methylation analysis
+
+Using the `bismark` to do the methylation analysis of the BS-seq data.
+
+### Genome indexing
+
+Before alignments, the genome of interest needs bisulfiter converting according to `bismark` and indexed by `bowtie/bowtie2`. Here I repeated the processes with `bowtie2`.
+
+```bash
+cd /mnt/e/methy
+
+bismark_genome_preparation --bowtie2 /mnt/e/methy/genome
+```
+
+### Alignment
+
+The core of the methylation data analysis procedure is to align the sequencing reads to the reference genome which converted to bisulfite-type. It is assumed that all data were high-quality and were  adapter trimmed.
+
+```bash
+genome_path="/mnt/e/methy/genome"
+cd 
 ```
