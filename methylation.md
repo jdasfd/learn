@@ -85,7 +85,7 @@ trim_galore -j 4 \
 " ::: $(ls *.fastq.gz)
 
 cd /mnt/e/methy/trim
-mv *.txt *.html ../fastqc/trimmed/
+mv *_fastqc.zip *.txt *.html ../fastqc/trimmed/
 ```
 
 The adapter were all removed by `trim_galore`.
@@ -93,6 +93,30 @@ The adapter were all removed by `trim_galore`.
 ## Methylation analysis
 
 Using the `bismark` to do the methylation analysis of the BS-seq data.
+
+**Bismark**:
+
+```txt
+genomic fragment:      ...ccgg(mc)atgtttaaa(mc)gct...
+bisulfite-treated:        TTGG  C ATGTTTAAA  C GTT
+
+BS-treated seq were followed:
+C-to-T:                   TTGG  T ATGTTTAAA  T GTT (1)
+G-to-A:                   TTAA  C ATATTTAAA  C ATT (2)
+
+forward strand C-to-T: ...ttgg  t atgtttaaa  t gtt...
+genome(1)              ...aacc  a tacaaattt  a caa...
+
+forward strand G-to-A: ...ccaa  c atatttaaa  c act...
+genome(2)              ...ggtt  g tataaattt  g tga...
+
+(1) -> genome(1)
+(1) -> genome(2)
+(2) -> genome(1)
+(2) -> genome(2)
+```
+
+Determine unique best alignment after 4 round mapping
 
 ### Genome indexing
 
@@ -109,6 +133,15 @@ bismark_genome_preparation --bowtie2 /mnt/e/methy/genome
 The core of the methylation data analysis procedure is to align the sequencing reads to the reference genome which converted to bisulfite-type. It is assumed that all data were high-quality and were  adapter trimmed.
 
 ```bash
+mkdir -p /mnt/e/methy/output/bismark_result
+cd /mnt/e/methy/trim
+
 genome_path="/mnt/e/methy/genome"
-cd 
+
+# read alignment
+bismark -o ../output/bismark_result/ --parallel 4 --genome_folder ${genome_path} ./*.fq.gz
+# --parallel: (May also be --multicore <int>), resource hungry, do jobs concurrently and merge at the end
+# --bowtie2: default, bismark limits bowtie2 only perform end-to-end alignments
+# -L: length of seed substrings, default -L 20
+# -N: mismatches allowed in seed, default -N 0
 ```
