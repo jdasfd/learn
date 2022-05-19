@@ -12,6 +12,7 @@ The protocol was orginated from my lab colleague [Jihong-Tang](https://github.co
     - [Methylation information extracting](#methylation-information-extracting)
   - [Downstream Analysis](#downstream-analysis)
     - [Input data preparation](#input-data-preparation)
+    - [DML/DMR detection](#dmldmr-detection)
   - [Reference](#reference)
 
 ## Data Preparation
@@ -283,9 +284,110 @@ Based on the methylation info got from previous [methylation analysis](#methylat
 The bismark result `.cov` files contain following cols: chr, start, end, methylation(%), count methylated, count unmethylated.
 
 ```bash
+cd /mnt/e/methy/output/deduplicated_result
+
+zcat TetKO_bismark_bt2.deduplicated.bismark.cov.gz | tsv-filter --gt 4:95 | head -n 3
+#1       3068643 3068643 100     1       0
+#1       3085348 3085348 100     1       0
+#1       3111460 3111460 100     1       0
+#chr    start   end methylation(%)  count_methylated    count_unmethlated
+```
+
+- Transfer input data to required format
+
+```bash
 mkdir /mnt/e/methy/output/results
+cd /mnt/e/methy/output/deduplicated_result
+
+for file in `ls *.bismark.cov.gz | perl -p -e 's/^(.*?)_.+$/$1/'`
+do
+zcat ${file}_bismark_bt2.deduplicated.bismark.cov.gz | \
+sed '1ichr\tstart\tend\tmethyl%\tmethyled\tunmethyled' \
+> ../results/${file}.cov.tsv
+done
+```
+
+### DML/DMR detection
+
+After the input data preparation, using `DSS` package to find DMLs or DMRs.
+
+- Main fuction using in R
+
+**Attention**: Following command were from the `DSS` Reference Manual. They were only examples about how to use it.
+
+```R
+library(DSS)
+
+# make BSseq objects
+BSobj <- makeBSseqData(list(data1.1, data1.2, data2.1, data2.2),
+c("C1", "C2", "N1", "N2"))
+
+# DML test
+dmlTest <- DMLtest(BSobj, group1 = c("C1", "C2"), group2 = c("N1", "N2"))
+
+# call DML
+dmls <- callDML(dmlTest)
+
+# call DML with a threshould
+dmls2 <- callDML(dmlTest, delta = 0.1)
+
+# take a small portion of data and test
+BSobj <- BS.cancer.ex[140000:150000,]
+dmlTest <- DMLtest(BSobj, group1 = c("C1", "C2", "C3"), group2 = c("N1", "N2", "N3"),
+    smoothing = TRUE, smooting.span = 500)
+
+# call DMR based on test results
+dmrs <- callDMR(dmlTest)
+```
+
+- Rscript for DML/DMR detecting
+
+```bash
 cd /mnt/e/methy/output/results
 
+Rscript -e '
+library(tidyr)
+suppressMessages(library(dplyr))
+library(readr)
+suppressMessages(library(DSS))
+
+args <- commandArgs(T)
+
+# import data
+data1 <- read_tsv(args[1], show_col_type = FALSE)
+data2 <- read_tsv(args[2], show_col_type = FALSE)
+file_prefix <- args[3]
+outtest <- paste0(args[3], "_test.tsv")
+outdmls <- paste0(args[3], "_dmls.tsv")
+outdmrs <- paste0(args[3], "_dmrs.tsv")
+
+# data manipulation to prepare for the BSseq objection
+print("Importing data file, this may take a while...")
+DSS_in1 <- data1 %>%
+    mutate(chr = paste("chr", chr, seq = "")) %>%
+    mutate(pos = start, N = methyled + unmethyled, X = methyled) %>%
+    select(chr, pos, N, X)
+DSS_in2 <- data2 %>%
+    mutate(chr = paste("chr", chr, seq = "")) %>%
+    mutate(pos = start, N = methyled + unmethyled, X = methyled) %>%
+    select(chr, pos, N, X)
+
+# create BSseq object and make the statistical test
+bsobj <- makeBSseqData(list(DSS_in1, DSS_in2), c("WT", "TetKO"))
+dmlTest <- DMLtest(bsobj, group1 = c("WT"), group2 = c("TetKO"), smoothing = T)
+print("dml statistical test completed.")
+
+# dmls detection
+dmls <- callDML(dmlTest, p.threshold = 0.001)
+# dmrs detection
+dmrs <- callDMR(dmlTest, p.threshold= 0.01)
+print("DML and DMR extraction completed.")
+
+# output the results
+write.table(dmlTest, outtest, raw.names = FALSE, col.names = FALSE, sep = "\t")
+write.table(dmls, outdmls, raw.names = FALSE, col.names = FALSE, sep = "\t")
+write.table(dmrs, outdmrs, raw.names = FALSE, col.names = FALSE, sep = "\t")
+' WT.cov.tsv TetKO.cov.tsv mouse_chrall
 
 ```
 
