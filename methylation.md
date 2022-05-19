@@ -388,7 +388,6 @@ write.table(dmlTest, outtest, raw.names = FALSE, col.names = FALSE, sep = "\t")
 write.table(dmls, outdmls, raw.names = FALSE, col.names = FALSE, sep = "\t")
 write.table(dmrs, outdmrs, raw.names = FALSE, col.names = FALSE, sep = "\t")
 ' WT.cov.tsv TetKO.cov.tsv mouse_chrall
-
 ```
 
 ## Reference
