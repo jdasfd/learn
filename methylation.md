@@ -1,5 +1,19 @@
 # Methylation Learning
 
+The protocol was orginated from my lab colleague [Jihong-Tang](https://github.com/Jihong-Tang/methylation-analysis/tree/master/NBT_repeat). I repeated it and learn the methylation analyze protocol.
+
+- [Methylation Learning](#methylation-learning)
+  - [Data Preparation](#data-preparation)
+  - [Quality Control and Trimming](#quality-control-and-trimming)
+  - [Methylation Analysis](#methylation-analysis)
+    - [Genome indexing](#genome-indexing)
+    - [Alignment](#alignment)
+    - [Aligned reads deduplication](#aligned-reads-deduplication)
+    - [Methylation information extracting](#methylation-information-extracting)
+  - [Downstream Analysis](#downstream-analysis)
+    - [Input data preparation](#input-data-preparation)
+  - [Reference](#reference)
+
 ## Data Preparation
 
 - Software Preparation
@@ -52,7 +66,7 @@ done
 aria2c -j 2 -s 2 --file-allocation=none -c -i genome_info.ftp.txt
 ```
 
-## Quality control and trimming
+## Quality Control and Trimming
 
 Using `fastqc` and `trim_galore` to do the quality control and adapter trimming.
 
@@ -90,7 +104,7 @@ mv *_fastqc.zip *.txt *.html ../fastqc/trimmed/
 
 The adapter were all removed by `trim_galore`.
 
-## Methylation analysis
+## Methylation Analysis
 
 Using the `bismark` to do the methylation analysis of the BS-seq data.
 
@@ -144,4 +158,139 @@ bismark -o ../output/bismark_result/ --parallel 4 --genome_folder ${genome_path}
 # --bowtie2: default, bismark limits bowtie2 only perform end-to-end alignments
 # -L: length of seed substrings, default -L 20
 # -N: mismatches allowed in seed, default -N 0
+
+# merge the two WT_mESC_rep1 result
+cd /mnt/e/methy/output/bismark_result
+
+samtools cat -o SRX4241790_trimmed_bismark_bt2.bam \
+SRR7368841_trimmed_bismark_bt2.bam WT_bismark_bt2.bam
+
+cat SRR7368841_trimmed_bismark_bt2_SE_report.txt \
+SRR7368842_trimmed_bismark_bt2_SE_report.txt > WT_bismark_bt2_SE_report.txt
+
+mv SRR7368845_trimmed_bismark_bt2.bam TetKO_bismark_bt2.bam
+mv SRR7368845_trimmed_bismark_bt2_SE_report.txt TetKO_bismark_bt2_SE_report.txt
+
+rm SRR7368841_trimmed_bismark_bt2.bam SRR7368842_trimmed_bismark_bt2.bam
+rm SRR7368841_trimmed_bismark_bt2_SE_report.txt SRR7368842_trimmed_bismark_bt2_SE_report.txt
+# samtools cat: concatenate BAMs
 ```
+
+### Aligned reads deduplication
+
+Mammalian genomes are unlikely to encounter several geniunely independent fragements which align to the very same genomic position. It is much more likely that such reads are originated from PCR amplification. For large genomes, removing duplicate reads is therefore a valid route to take.
+
+**Attention**: Note that deduplication is not recommended for RRBS-type experiments!
+
+The dedupliacation step could be finished from `bismark` tools, finishing through the `deduplicate_bismark` script.
+
+In the default mode, the first alignment to a given position will be used irrespective of its methylation call (fastest and near enough random as the alignments not ordered in any way).
+
+```bash
+cd /mnt/e/methy/output
+mkdir /mnt/e/methy/output/deduplicated_result
+
+# aligned reads deduplication
+deduplicate_bismark -s --bam --output_dir ./deduplicated_result/ ./bismark_result/*_bismark_bt2.bam
+# -s/--single: deduplicate single-end Bismark files
+# --bam: output will be written out in BAM instead of SAM.
+```
+
+### Methylation information extracting
+
+The `bismark_methylation_extractor` script could extract all methylation info from alignment result files and act as the endpoint of the `bismark` package.
+
+The script could extract ressults file produced by the Bismark bisulfite mapper (BAM/CRAM/SAM format) and extracts the methylation info for individual cytosines.
+
+This information is found in the methylation call field which can contain the following characters:
+
+> - X   for methylated C in CHG context
+> - x   for not methylated C CHG
+> - H   for methylated C in CHH context
+> - h   for not methylated C in CHH context
+> - Z   for methylated C in CpG context
+> - z   for not methylated C in CpG context
+> - U   for methylated C in Unknown context (CN or CHN)
+> - u   for not methylated C in Unknown context (CN or CHN)
+> - .   for any bases not involving cytosines
+
+The output files are in the following format (tab delimited):
+
+```txt
+<sequence_id>   <strand>    <chromosome>    <position>  <methylation call>
+```
+
+- The following command is used to retrive methylated information from mapping results of previous `bismark.bam`
+
+```bash
+genome_path= "/mnt/e/methy/genome/"
+cd /mnt/e/methy/output
+
+# methylation information extracting
+bismark_methylation_extractor -s --gzip --parallel 6 --bedGraph \
+--cytosine_report --genome_folder ${genome_path} \
+-o ./deduplicated_result/ ./deduplicated_result/*.bam
+# -s/--single-end: single-end read data
+# --bedGraph: the methylation output is written into a sorted bedGraph file that reports the position of a given cytosine and its methylation state
+# --cytosine_report" after conversion to bedGraph, produces a genome-wide methylation report for all cytosine in the genome
+```
+
+- Output format info:
+
+```txt
+OUTPUT:
+
+The bismark_methylation_extractor output is in the form:
+--------------------------------------------------------
+<seq-ID>  <methylation state*>  <chromosome>  <start position (= end position)>  <methylation call>
+* Methylated cytosines receive a '+' orientation,
+* Unmethylated cytosines receive a '-' orientation.
+
+
+The bismark_methylation_extractor output with --yacht (optional) specified is in the form:
+------------------------------------------------------------------------------------------
+<seq-ID>  <methylation state*>  <chromosome>  <start position (= end position)>  <methylation call>  <read start>  <read end>  <read orientation>
+* Methylated cytosines receive a '+' orientation,
+* Unmethylated cytosines receive a '-' orientation.
+
+
+The bedGraph output (optional) looks like this (tab-delimited; 0-based start coords, 1-based end coords):
+---------------------------------------------------------------------------------------------------------
+track type=bedGraph (header line)
+<chromosome>  <start position>  <end position>  <methylation percentage>
+
+
+The coverage output looks like this (tab-delimited, 1-based genomic coords; zero-based half-open coordinates available with '--zero_based'):
+--------------------------------------------------------------------------------------------------------------------------------------------
+<chromosome>  <start position>  <end position>  <methylation percentage>  <count methylated>  <count non-methylated>
+
+
+The genome-wide cytosine methylation output file is tab-delimited in the following format:
+------------------------------------------------------------------------------------------
+<chromosome>  <position>  <strand>  <count methylated>  <count non-methylated>  <C-context>  <trinucleotide context>
+```
+
+## Downstream Analysis
+
+Based on the methylation info got from previous [methylation analysis](#methylation-analysis) step, make more downstream analysis including finding specific locus and detecting differential methylation loci (DML) or differential methylation regions (DMR). R package `DSS` fit for purpose.
+
+`DSS` was already included in my teacher's script [packages.R](https://github.com/wang-q/dotfiles/blob/master/r/packages.R). Please go and check them before you want to complete those steps.
+
+### Input data preparation
+
+`DSS` requires data from each BS-seq like experiment to be suummarized into following info for each CG position: chromosome number, genomic coordinate, total number of reads, and number of reads showing methylation.
+
+The bismark result `.cov` files contain following cols: chr, start, end, methylation(%), count methylated, count unmethylated.
+
+```bash
+mkdir /mnt/e/methy/output/results
+cd /mnt/e/methy/output/results
+
+
+```
+
+## Reference
+
+- [NBT_repeat](https://github.com/Jihong-Tang/methylation-analysis/tree/master/NBT_repeat)
+- [DSS package Manual](http://bioconductor.org/packages/release/bioc/html/DSS.html)
+- [Bismark Docs](https://github.com/FelixKrueger/Bismark/tree/master/Docs)
