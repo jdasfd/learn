@@ -1,4 +1,6 @@
-# BWT algorithm
+# Genome Mapping or Alignment
+
+## BWT algorithm
 
 二代数据：
 
@@ -10,7 +12,7 @@
 - 长
 - 不稳定，会存在 100 bp 以上的structure variation
 
-## 比对算法原理
+### 比对算法原理
 
 Pairwise alignment:
 
