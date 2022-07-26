@@ -63,7 +63,38 @@ perl examples/shift_in_sub.pl one two
 
 ## Perl RE
 
+### The Match Operator
 
+The match operator, m//, is used to match a string or statement to a regular expression. The m// actually works in the same fashion as the q// operator series.you can use any combination of naturally matching characters to act as delimiters for the expression. For example, m{}, m(), and m>< are all valid.
+
+```perl5
+$bar = "foo";
+if ($bar =~ m[foo]) {
+    print "Match.\n";
+} else {
+    print "Not match.\n";
+}
+# or
+if ($bar =~ m{foo}) {
+    print "Match.\n";
+} else {
+    print "Not match.\n";
+}
+```
+
+Note that the entire match expression, that is the expression on the left of =~ or !~ and the match operator, returns true (in a scalar context) if the expression matches.
+
+```perl5
+$true = ($foo =~ m/foo/);
+```
+
+This will set `$true` to 1 if `$foo` matches the regex, or 0 if the match fails.
+
+In a **list context**, the match returns the contents of any **grouped expressions**.
+
+```perl5
+my ($hours, $minutes, $seconds) = ($time =~ m/(\d+):(\d+):(\d+)/);
+```
 
 ## References
 
