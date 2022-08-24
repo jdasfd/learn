@@ -6,7 +6,7 @@
 
 `shift()` function in Perl returns the first value in an array, removing it and shifting the elements of the array list to the left by one. Shift operation removes the value like pop but is taken from the start of the array instead of the end as in pop.
 
-```perl5
+```txt
 shift(Array)
 #Returns: -1 if array is Empty otherwise first element of the array
 ```
@@ -21,7 +21,7 @@ If `shift` is outside any function it takes the first element of `@ARGV` (the pa
 
 **shift_argv.pl**
 
-```perl5
+```txt
 use strict;
 use warnings;
 
@@ -40,7 +40,7 @@ If `shift` is inside a function it takes the first element of `@_` (the paramete
 
 **shift_in_sub.pl**
 
-```perl5
+```txt
 use strict;
 use warnings;
  
@@ -67,7 +67,7 @@ perl examples/shift_in_sub.pl one two
 
 The match operator, m//, is used to match a string or statement to a regular expression. The m// actually works in the same fashion as the q// operator series.you can use any combination of naturally matching characters to act as delimiters for the expression. For example, m{}, m(), and m>< are all valid.
 
-```perl5
+```txt
 $bar = "foo";
 if ($bar =~ m[foo]) {
     print "Match.\n";
@@ -84,7 +84,7 @@ if ($bar =~ m{foo}) {
 
 Note that the entire match expression, that is the expression on the left of =~ or !~ and the match operator, returns true (in a scalar context) if the expression matches.
 
-```perl5
+```txt
 $true = ($foo =~ m/foo/);
 ```
 
@@ -92,7 +92,7 @@ This will set `$true` to 1 if `$foo` matches the regex, or 0 if the match fails.
 
 In a **list context**, the match returns the contents of any **grouped expressions**.
 
-```perl5
+```txt
 my ($hours, $minutes, $seconds) = ($time =~ m/(\d+):(\d+):(\d+)/);
 ```
 
@@ -100,13 +100,13 @@ my ($hours, $minutes, $seconds) = ($time =~ m/(\d+):(\d+):(\d+)/);
 
 The metacharacter `"|"` is used to match one thing or another. You aren't limited to just a single `|`.
 
-```perl5
+```txt
 $foo =~ m/fee|fie|foe|fum/
 ```
 
 The `"|"` binds less tightly than a sequence of ordinary characters. We can override this by using the grouping metacharacters, the parentheses `"("` and `")"`.
 
-```perl5
+```txt
 $foo =~ m/th(is|at) thing/
 ```
 
@@ -169,9 +169,24 @@ To simplify multi-line substitutions, the `"."` character never matches a newlin
 
 - `x` and `xx`
 
-    A single `/x` tells the regular expression parser to ignore most whitespace that is neither backslashed nor within a bracketed character class. You can use this to break up your regular expression into more readable parts. Also, the "#" character is treated as a metacharacter introducing a comment that runs up to the pattern's closing delimiter, or to the end of the current line if the pattern extends onto the next line.
+  A single `/x` tells the regular expression parser to ignore most whitespace that is neither backslashed nor within a bracketed character class. You can use this to break up your regular expression into more readable parts. Also, the "#" character is treated as a metacharacter introducing a comment that runs up to the pattern's closing delimiter, or to the end of the current line if the pattern extends onto the next line.
     
-    A common pitfall is to forget that "#" characters (outside a bracketed character class) begin a comment under /x and are not matched literally. Just keep that in mind when trying to puzzle out why a particular /x pattern isn't working as expected. Inside a bracketed character class, "#" retains its non-special, literal meaning.
+  A common pitfall is to forget that "#" characters (outside a bracketed character class) begin a comment under /x and are not matched literally. Just keep that in mind when trying to puzzle out why a particular /x pattern isn't working as expected. Inside a bracketed character class, "#" retains its non-special, literal meaning.
+
+  Starting in Perl v5.26, if the modifier has a second "x" within it, the effect of a single /x is increased. The only difference is that inside bracketed character classes, non-escaped (by a backslash) SPACE and TAB characters are not added to the class, and hence can be inserted to make the classes more readable:
+
+  ```txt
+  / [d-e g-i 3-7]/xx
+  /[ ! @ # $ % ^ & * () = ? <> ' ]/xx
+  ```
+
+- `p`
+
+  Preserve the string matched such that `${^PREMATCH}`, `${^MATCH}`, and `${^POSTMATCH}` are available for use after matching.
+
+  In Perl 5.20 and higher this is ignored. Due to a new copy-on-write mechanism, ${^PREMATCH}, ${^MATCH}, and ${^POSTMATCH} will be available after the match regardless of the modifier.
+
+And others could be seen at [perlre](https://perldoc.perl.org/perlre).
 
 ### Extended Patterns
 
