@@ -173,9 +173,51 @@ To simplify multi-line substitutions, the `"."` character never matches a newlin
     
     A common pitfall is to forget that "#" characters (outside a bracketed character class) begin a comment under /x and are not matched literally. Just keep that in mind when trying to puzzle out why a particular /x pattern isn't working as expected. Inside a bracketed character class, "#" retains its non-special, literal meaning.
 
-    Starting in Perl v5.26, if the modifier has a second "x" within it, the effect of a single /x is increased. The only difference is that inside bracketed character classes, non-escaped (by a backslash) SPACE and TAB characters are not added to the class, and hence can be inserted to make the classes more readable:
+### Extended Patterns
+
+The syntax for most of these is a pair of parentheses with a question mark as the first thing within the parentheses. The character after the question mark indicates the extension.
+
+- `(?#text)`
+
+  A comment. The text is ignored. Note that Perl closes the comment as soon as it sees a `")"`, so there is no way to put a literal `")"` in the comment. The pattern's closing delimiter must be escaped by a backslash if it appears in the comment.
 
 
+- `(?adlupimnsx-imnsx)` or `(?^alupimnsx)`
+
+  Zero or more embedded pattern-match modifiers, to be turned on (or turned off if preceded by `"-"`) for the remainder of the pattern or the remainder of the enclosing pattern group (if any). 
+
+  This is particularly useful for dynamically-generated patterns, such as those read in from a configuration file, taken from an argument, or specified in a table somewhere. Consider the case where some patterns want to be case-sensitive and some do not: The case-insensitive ones merely need to include `(?i)` at the front of the pattern.
+
+  ```txt
+  $pattern = "foobar";
+  if ( /$pattern/i ) { }
+  
+  # more flexible:
+  
+  $pattern = "(?i)foobar";
+  if ( /$pattern/ ) { }
+  ```
+
+  Starting in Perl 5.14, a `"^"` (caret or circumflex accent) immediately after the `"?"` is a shorthand equivalent to `d-imnsx`. Flags (except `"d"`) may follow the caret to override it. But a minus sign is not legal with it.
+
+  Note also that the `"p"` modifier is special in that its presence anywhere in a pattern has a global effect.
+
+
+- `(?:pattern)`, `(?adluimnsx-imnsx:pattern)`, `(?^aluimnsx:pattern)`
+
+  This is for clustering, not capturing; it groups subexpressions like "()", but doesn't make backreferences as "()" does. So
+
+  ```txt
+  @fields = split(/\b(?:a|b|c)\b/)
+  ```
+
+  matches the same field delimiters as
+
+  ```txt
+  @fields = split(/\b(?:a|b|c)\b/)
+  ```
+
+  but doesn't spit out the delimiters themselves as extra fields (even though that's the behaviour of "split" in perlfunc when its pattern contains capturing groups). It's also cheaper not to capture characters if you don't need to.
 
 ## References
 
