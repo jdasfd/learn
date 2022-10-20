@@ -93,7 +93,7 @@ git -C $(brew --repository homebrew/core) checkout master
 git -C $(brew --repository homebrew/core) reset --hard HEAD
 ```
 
-##  DBD::mysql::db do failed: Specified key was too long; max key length is 1000 bytes at gr_db.pl
+## DBD::mysql::db do failed: Specified key was too long; max key length is 1000 bytes at gr_db.pl
 
 出现原因，ENGINE使用的是MyISAM，因此限制的最大key长度为1000 bytes。当初王老师在使用MySQL时版本为5.7，使用的CHARSET默认为latin1，即ASCII字符，为1 bytes。但是当系统更新到MySQL 8.0时，默认使用的字符是utf8,有长有短，为1 bytes至4 bytes，因此当key生成的时候就有可能超过1000，此时需要在init.sql中更新CHARSET，将CHARSET规定为latin1，这样就可以避免上述的问题
 
@@ -113,3 +113,14 @@ awk '{if(NR%4 == 1){print ">" substr($0,2)}}{if(NR%4 == 2){print}}' fastq > fast
 `NF (Number of Field)`记录目前被分割的字段的数目。
 
 `faops filter`也可完成该任务，具体请参考[Faops_intro.md](Tool_usage/Faops_intro.md)
+
+## Perl loadable library and perl binary are mismatched
+
+最好的解决方式，把perl卸了重装一遍
+
+```bash
+rm -rf ~/perl5
+
+brew install perl
+bash ~/Scripts/dotfiles/perl/install.sh
+```
