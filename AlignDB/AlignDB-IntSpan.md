@@ -13,7 +13,7 @@
 ```perl
 use AlignDB::IntSpan;
 
-my $set = AlignDB::Int -> new;
+my $set = AlignDB::IntSpan -> new;
 $set -> add(1, 2, 3, 5, 7, 9);
 $set -> add_range(100, 1_000_000);
 print $set -> as_string, "\n";  # 1-3,5,7,9,100-1000000
@@ -220,7 +220,7 @@ $set = $set -> invert;
 
 set相对于整个集合的补集。假设`$set`为集合$A$，则`$set -> invert`相当于$\bar{A}$。要注意该插件目前是在一个有限集合内对一个有限集求补集——因此补集仍旧是一个有限集，只是`$NEG_INF`和`$POS_INF`是个非常大的整数。
 
-- remove_arange
+- remove_range
 
 ```perl
 $set -> remove_range($lower, $upper);
