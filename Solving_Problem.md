@@ -124,3 +124,10 @@ rm -rf ~/perl5
 brew install perl
 bash ~/Scripts/dotfiles/perl/install.sh
 ```
+
+## 如何挂载外置的硬盘使得WSL2识别
+
+```bash
+sudo mount -t drvfs F: /mnt/f
+ln -s /mnt/f/data/ ~/data
+```
