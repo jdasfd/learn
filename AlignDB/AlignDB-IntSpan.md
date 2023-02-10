@@ -347,7 +347,7 @@ my $new_set = AlignDB::IntSpan::xor($set1, $set2, $set3);
 
 - at
 
-返回indexth element of set (集合中index顺序的元素)，index从"1"开始。负的indices (index复数)从集合末尾开始计数。
+返回集合中指定顺序（index）的数值，index从"1"开始。负的indices（index复数）从集合末尾开始计数。
 
 - index
 
