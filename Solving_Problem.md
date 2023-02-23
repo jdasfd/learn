@@ -130,8 +130,20 @@ sudo mount -t drvfs F: /mnt/f
 ln -s /mnt/f/data/ ~/data
 ```
 
-## "as: unrecognized option '--gdwarf-5'"
+## 抑制linuxbrew自动更新
 
 ```bash
-brew install binutils
+echo >> $HOME/.bashrc
+echo >> $HOME/.bashrc
+echo '# Close linuxbrew auto update' >> $HOME/.bashrc
+echo "export HOMEBREW_NO_AUTO_UPDATE=1" >> $HOME/.bashrc
+```
+
+## 从powershell卸载wsl2的ubuntu
+
+```bash
+# list all ubuntu in wsl2
+wslconfig /l
+# uninstall them
+wslconfig /u Ubuntu # the name depends on your setting
 ```
