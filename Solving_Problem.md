@@ -28,7 +28,7 @@ sudo vim ld.so.conf
 sudo ldconfig
 ````
 
-##  linuxbrew/xorg/libvdpau
+## linuxbrew/xorg/libvdpau
 
 Brew always warned you to use libvdpau substituting linuxbrew/xorg/libvdpau.
 
@@ -54,13 +54,11 @@ Using CTRL + w to delete commands until the nearest "space"
 
 2. `ls -l`进行查看，可以看到该文件的属性没有可执行，因此需要添加可执行权限
 
-3. 使用`chmod`来改变文件的属性
+3. 使用`chmod`来改变文件的属性，为uzcat这个bash脚本加上可执行权限
 
    ```bash
    chmod u+x uzcat.sh
    ```
-   
-   为uzcat这个bash脚本加上可执行权限
 
 4. 可以直接在任意路径启动该bash脚本，因为`/bin`已经被添加到了`$PATH`下
 
@@ -122,7 +120,7 @@ awk '{if(NR%4 == 1){print ">" substr($0,2)}}{if(NR%4 == 2){print}}' fastq > fast
 rm -rf ~/perl5
 
 brew install perl
-bash ~/Scripts/dotfiles/perl/install.sh
+# bash ~/Scripts/dotfiles/perl/install.sh
 ```
 
 ## 如何挂载外置的硬盘使得WSL2识别
@@ -130,4 +128,10 @@ bash ~/Scripts/dotfiles/perl/install.sh
 ```bash
 sudo mount -t drvfs F: /mnt/f
 ln -s /mnt/f/data/ ~/data
+```
+
+## "as: unrecognized option '--gdwarf-5'"
+
+```bash
+brew install binutils
 ```
