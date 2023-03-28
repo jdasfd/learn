@@ -130,6 +130,14 @@ sudo mount -t drvfs F: /mnt/f
 ln -s /mnt/f/data/ ~/data
 ```
 
+- If mount point does not exist, then you should first create that mount point.
+
+```bash
+cd /mnt
+mkdir e
+sudo mount -t drvfs E: /mnt/e
+```
+
 ## 抑制linuxbrew自动更新
 
 ```bash
@@ -145,7 +153,7 @@ echo "export HOMEBREW_NO_AUTO_UPDATE=1" >> $HOME/.bashrc
 
 从设置的应用中无法成功卸载所有已安装的Linux子系统（ubuntu），因此使用这种方法将子系统清空。
 
-```bash
+```shell
 # list all ubuntu in wsl2
 wslconfig /l
 # uninstall them
@@ -156,6 +164,6 @@ wslconfig /u Ubuntu # the name depends on your setting
 
 目前遇到了一些无法解决的问题：Ubuntu会在运行一段时间后自动kill掉所有进程，并且卡在界面。重新启动之后无法使用`cd ~/`，`ls`等命令，也无法识别`ctrl+c`等有效操作，但是可以进行`sudo apt update`，也可以`cd /var`，除了用户根目录之下，上一层的文件夹均可以`cd`。
 
-```bash
+```shell
 wsl --shutdown
 ```
