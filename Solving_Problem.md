@@ -167,3 +167,9 @@ wslconfig /u Ubuntu # the name depends on your setting
 ```shell
 wsl --shutdown
 ```
+
+- 打开WSL2的可视化界面
+
+目前该问题已经被更新后的linux subsystem解决，目前WSL2安装后会在文件夹中映射一个驱动器，可以直接从`此电脑`中访问。
+
+如果想从命令行直接打开当前文件夹，运行`explorer.exe .`即可。
