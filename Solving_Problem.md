@@ -174,6 +174,12 @@ wsl --shutdown
 
 如果想从命令行直接打开当前文件夹，运行`explorer.exe .`即可。
 
+## Ubuntu查询MAC地址
+
+```bash
+sudo lshw -c network | grep serial
+```
+
 ## 为何在.r script中会输出两张图
 
 问题描述：由于需要将两幅图拼在一起，所以写了一个程序共同输出，但是在脚本运行时会出现两张图，一张图是默认大小的，另一张是指定了大小的。
