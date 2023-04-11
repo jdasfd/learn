@@ -6,31 +6,34 @@ fast BAM/CRAM depth calculation for **WGS**, **exome**, or **targeted sequencing
 
 - 输出路径指定
 
- 首先，mosdepth不会给出output的参数，因此，在运行时会将文件输出到当前路径。因此在使用时可以在需要输出的路径中填写命令，如：
+首先，mosdepth不会给出output的参数，因此，在运行时会将文件输出到当前路径。因此在使用时可以在需要输出的路径中填写命令，如：
 
- ```bash
- cd /mnt/e/project/srna/output/cover/trna
+```bash
+cd /mnt/e/project/srna/output/cover/trna
  
- parallel -j 3 " \
- mosdepth -t 4 -b ../../../annotation/bacteria/trna.bed \
- {} ../../bam/bacteria/{}.sort.bam \
- " ::: $(ls ../../bam/bacteria/*.sort.bam | \
- perl -p -e 's/\.sort\.bam//' | perl -p -e 's/^.+?\/S/S/')
- ```
+parallel -j 3 " \
+    mosdepth -t 4 -b ../../../annotation/bacteria/trna.bed \
+        {} ../../bam/bacteria/{}.sort.bam \
+    " ::: $(
+        ls ../../bam/bacteria/*.sort.bam |
+        perl -p -e 's/\.sort\.bam//' |
+        perl -p -e 's/^.+?\/S/S/'
+    )
+```
 
- 提供输入文件的绝对路径
+提供输入文件的绝对路径
 
 - 输出参数
 
- ```bash
- Usage: mosdepth [options] <prefix> <BAM-or-CRAM>
- ```
+```bash
+Usage: mosdepth [options] <prefix> <BAM-or-CRAM>
+```
 
- 这里的prefix是命名，对mosdepth文件进行命名，得到的每个mosdepth文件都会以输入的prefix来命名，因此在上面举例的命令中，在parallel传入参数的时候，一个单独的`{}`就是prefix命名，会将传入的文件作为输出的命名
+这里的prefix是命名，对mosdepth文件进行命名，得到的每个mosdepth文件都会以输入的prefix来命名，因此在上面举例的命令中，在parallel传入参数的时候，一个单独的`{}`就是prefix命名，会将传入的文件作为输出的命名
 
 - 输出文件解释
 
- 输出文件包括了
+输出文件包括了
 
 1. `mosdepth.global.dist.txt`
 
@@ -74,4 +77,4 @@ fast BAM/CRAM depth calculation for **WGS**, **exome**, or **targeted sequencing
 
    col 4 - 覆盖次数
 
- 得知上面输出文件提供的主要信息后，就可以根据这些文件的内容，提取所需要的覆盖信息
+得知上面输出文件提供的主要信息后，就可以根据这些文件的内容，提取所需要的覆盖信息

@@ -1,4 +1,4 @@
-# Bioinformatic concepts
+# Web connection problem
 
 In the markdown, I recorded some concepts or definitions related in simplified Chinese.
 
@@ -71,9 +71,3 @@ curl -fsSL "https://www.ncbi.nlm.nih.gov/biosample/?term={}&report=full&format=t
 
 [REST API Tutorial](https://restfulapi.net/).
 [RESTful 架构详解](https://www.runoob.com/w3cnote/restful-architecture.html)
-
-## What is HTTP
-
-## `node.js`
-
-`Node.js`，简单来说就是运行在服务端的JavaScript，是一个事件驱动I/O服务端JavaScript环境，基于Google的V8引擎。

@@ -40,7 +40,7 @@ test file downloaded from <https://github.com/wang-q/faops>
 
 for every > is separated
 
-* Count base statistics in FA file(s)
+- Count base statistics in FA file(s)
 
   ```bash
   usage:
@@ -102,7 +102,7 @@ for every > is separated
   total   9317    2318    2305    2373    2321    0
   ```
 
-* Count total bases in FA file(s)
+- Count total bases in FA file(s)
 
   ```bash
   usage:
@@ -162,7 +162,7 @@ for every > is separated
   read49  358
   ```
 
-* Extract a piece of DNA from a FA file
+- Extract a piece of DNA from a FA file
 
   ```bash
   usage:
@@ -175,7 +175,7 @@ for every > is separated
   tCGTTTAACCCAAatcAAGGCaatACAggtGggCCGccCatgTcAcAAActcgatGAGtgGgaAaTGgAgTgaAGcaGCAtCtGctgaGCCCCATTctctAgCggaaaATGgtatCGaACcGagataAGtTAAacCgcaaCgGAtaagGgGcgGGctTCAaGtGAaGGaAGaGgGgTTcAaaAgGccCgtcGtCaaTcAa
   ```
 
-* Reverse complement a FA file
+- Reverse complement a FA file
 
   ```bash
   usage:
@@ -184,4 +184,8 @@ for every > is separated
   faops rc ufasta.fa 2.fa
   ```
 
-*
+## Limitations
+
+Because of the `faops` was written in `C`, so the running time could be reduced. But the variable was limited in `C`, so the longer name could not be read properly when it comes to some fasta/fastq results.
+
+Otherwise, the name after `>` will be read only before the first `space` showed up. So the best way to deal with this problem is modified `space` to `_`.
