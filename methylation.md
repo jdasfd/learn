@@ -345,11 +345,11 @@ dmrs <- callDMR(dmlTest)
 Rscript for DSS analysis put into script doc
 
 ```bash
-mkdir /mnt/e/methy/script
+mkdir /mnt/e/methy/scripts
 cd /mnt/e/methy/output/results
 
-Rscript ../../script/DSS_differ_analysis.R --help
-Rscript ../../script/DSS_differ_analysis.R --file1 WT.cov.tsv --file2 TetKO.cov.tsv -p mouse_chrall
+Rscript ../../scripts/DSS_differ_analysis.R --help
+Rscript ../../scripts/DSS_differ_analysis.R --file1 WT.cov.tsv --file2 TetKO.cov.tsv -p mouse_chrall
 ```
 
 ## Reference
