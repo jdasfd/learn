@@ -18,10 +18,14 @@ cd Atha
 
 ls | grep -v 'cif' > ../Atha.pdb.lst
 
-cd ..
+ls Atha |
+    parallel -j 24 '
+        USalign Atha/AF-Q9FI14-F1-model_v4.pdb.gz Atha/{} -mol prot -outfmt 2
+    ' \
+    > Q9FI14.align.tsv
 
-cat NLR.lst |
-    parallel -j 12 -k '
-        USalign Atha/AF-{}-F1-model_v4.pdb.gz -dir2 Atha/ Atha.pdb.lst -mol prot -outfmt 2
-    '
+USalign Atha/AF-Q9FI14-F1-model_v4.pdb.gz -dir2 Atha/ Atha.pdb.lst -mol prot -outfmt 2 > Q9FI14.align.tsv
+
+cat Q9FI14.align.tsv | grep -v '^#' | wc -l
+#54868
 ```
