@@ -50,6 +50,7 @@ quast-download-gridss
 quast-download-silva
 quast-download-busco
 conda install prokka -n genome
+conda install clinker-py -n genome
 ```
 
 ## Reference genome
