@@ -1,5 +1,7 @@
 # Alphafold related processes
 
+## Alphafold info
+
 ## Prepare
 
 - Ahphafold2
@@ -46,6 +48,30 @@ bash run_alphafold.sh \
 ```
 
 ```bash
+bash run_alphafold.sh \
+	-d /home/jyq/share/af_dataset \
+	-o /home/jyq/data/AF_related/136_result/ \
+	-f /home/jyq/data/AF_related/136.fa \
+	-t 2022-10-05 \
+	-m monomer \
+	-n 10 \
+	-c reduced_dbs \
+	-l 2 \
+	-b true
+
+bash run_alphafold.sh \
+	-d /home/jyq/share/af_dataset \
+	-o /home/jyq/data/AF_related/Fxy_result/ \
+	-f /home/jyq/data/AF_related/Fxy/136_multi.fa \
+	-t 2022-10-05 \
+	-m multimer \
+	-n 10 \
+	-c reduced_dbs \
+	-l 2 \
+	-b true
+```
+
+```bash
 mkdir -p ~/data/AF_related/Atha
 cd ~/data/AF_related/Atha
 tar -xf UP000006548_3702_ARATH_v4.tar
@@ -86,4 +112,88 @@ USalign Atha/AF-Q9FI14-F1-model_v4.pdb.gz -dir2 Atha/ Atha.pdb.lst -mol prot -ou
 
 cat Q9FI14.align.tsv | grep -v '^#' | wc -l
 #54868
+```
+
+```bash
+cd ~/data/AF_related/AvrL
+
+mafft --auto <(cat Lus_L5.fa Lus_L6.fa) > Lus_L.aln
+mafft --auto <(cat AvrL567_A.fa AvrL567_D.fa) > AvrL567.aln
+
+# too little sequence difference
+mafft --auto --clustalout <(cat AvrL567_A.fa AvrL567_D.fa) > AvrL567.clustl.aln
+mafft --auto --clustalout <(cat Lus_L5.fa Lus_L6.fa) > Lus_L.clustl.aln
+
+cat AvrL567_A.fa Lus_L5.fa > AL5.fa
+cat AvrL567_D.fa Lus_L5.fa > DL5.fa
+cat AvrL567_A.fa Lus_L6.fa > AL6.fa
+cat AvrL567_D.fa Lus_L6.fa > DL6.fa
+
+cd ~/share/alphafold-2.3.1
+
+bash run_alphafold.sh \
+	-d /home/jyq/share/af_dataset \
+	-o /home/jyq/data/AF_related/Avr_result/ \
+	-f /home/jyq/data/AF_related/AvrL/AvrL567_A.fa \
+	-t 2022-10-05 \
+	-m monomer \
+	-n 10 \
+	-c reduced_dbs \
+	-l 2 \
+	-b true
+
+bash run_alphafold.sh \
+	-d /home/jyq/share/af_dataset \
+	-o /home/jyq/data/AF_related/Avr_result/ \
+	-f /home/jyq/data/AF_related/AvrL/AvrL567_D.fa \
+	-t 2022-10-05 \
+	-m monomer \
+	-n 10 \
+	-c reduced_dbs \
+	-l 2 \
+	-b true
+
+bash run_alphafold.sh \
+	-d /home/jyq/share/af_dataset \
+	-o /home/jyq/data/AF_related/Avr_result/ \
+	-f /home/jyq/data/AF_related/AvrL/AL5.fa \
+	-t 2022-10-05 \
+	-m multimer \
+	-n 10 \
+	-c reduced_dbs \
+	-l 2 \
+	-b true
+
+bash run_alphafold.sh \
+	-d /home/jyq/share/af_dataset \
+	-o /home/jyq/data/AF_related/Avr_result/ \
+	-f /home/jyq/data/AF_related/AvrL/DL5.fa \
+	-t 2022-10-05 \
+	-m multimer \
+	-n 10 \
+	-c reduced_dbs \
+	-l 2 \
+	-b true
+
+bash run_alphafold.sh \
+	-d /home/jyq/share/af_dataset \
+	-o /home/jyq/data/AF_related/Avr_result/ \
+	-f /home/jyq/data/AF_related/AvrL/AL6.fa \
+	-t 2022-10-05 \
+	-m multimer \
+	-n 10 \
+	-c reduced_dbs \
+	-l 2 \
+	-b true
+
+bash run_alphafold.sh \
+	-d /home/jyq/share/af_dataset \
+	-o /home/jyq/data/AF_related/Avr_result/ \
+	-f /home/jyq/data/AF_related/AvrL/DL6.fa \
+	-t 2022-10-05 \
+	-m multimer \
+	-n 10 \
+	-c reduced_dbs \
+	-l 2 \
+	-b true
 ```
