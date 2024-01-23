@@ -196,4 +196,15 @@ bash run_alphafold.sh \
 	-c reduced_dbs \
 	-l 2 \
 	-b true
+
+bash run_alphafold.sh \
+	-d /home/jyq/share/af_dataset \
+	-o /home/jyq/data/AF_related/040_result/ \
+	-f /home/jyq/data/AF_related/040.fa \
+	-t 2022-10-05 \
+	-m monomer \
+	-n 10 \
+	-c reduced_dbs \
+	-l 3 \
+	-b true
 ```
