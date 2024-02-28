@@ -207,4 +207,37 @@ bash run_alphafold.sh \
 	-c reduced_dbs \
 	-l 3 \
 	-b true
+
+bash run_alphafold.sh \
+	-d /home/jyq/share/af_dataset \
+	-o /home/jyq/data/AF_related/Fxy_result/ \
+	-f /home/jyq/data/AF_related/Fxy/AD-136-TIR.mod.fa \
+	-t 2022-10-05 \
+	-m monomer \
+	-n 10 \
+	-c full_dbs \
+	-l 3 \
+	-b true
+
+bash run_alphafold.sh \
+	-d /home/jyq/share/af_dataset \
+	-o /home/jyq/data/AF_related/Fxy_result/ \
+	-f /home/jyq/data/AF_related/Fxy/BD-136-TIR.mod.fa \
+	-t 2022-10-05 \
+	-m monomer \
+	-n 10 \
+	-c full_dbs \
+	-l 3 \
+	-b true
+
+bash run_alphafold.sh \
+	-d /home/jyq/share/af_dataset \
+	-o /home/jyq/data/AF_related/ \
+	-f /home/jyq/data/AF_related/BZR_WUS.fa \
+	-t 2022-10-05 \
+	-m multimer \
+	-n 10 \
+	-c full_dbs \
+	-l 3 \
+	-b true
 ```
