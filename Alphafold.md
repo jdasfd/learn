@@ -240,4 +240,74 @@ bash run_alphafold.sh \
 	-c full_dbs \
 	-l 3 \
 	-b true
+- Using colabfold
+
+```bash
+conda activate /home/jyq/share/localcolabfold/colabfold-conda
+
+mkdir WWS_PPI
+
+cd ~/data/AF_related
+
+cp Mpagras_prot.faa.txt tmp.fa
+
+cat Mpagras_prot.faa.txt |
+    faops size stdin |
+    cut -f 1 |
+    parallel -j 1 -k '
+        for gene in $(cat tmp.fa | faops size stdin | cut -f 1)
+        do
+            faops one -l 0 Mpagras_prot.faa.txt {} stdout > WWS_PPI/{}_${gene}.fa
+            faops one -l 0 Mpagras_prot.faa.txt ${gene} stdout >> WWS_PPI/{}_${gene}.fa
+        done
+        faops some tmp.fa <(cat tmp.fa | faops size stdin | cut -f 1 | grep -v "${gene}") tmp
+        mv tmp tmp.fa
+    '
+
+rm tmp.fa
+
+for file in $(ls WWS_PPI)
+do
+    cat WWS_PPI/${file} |
+	perl -ne '/^(>.+)$/ ? print "$1\t" : print' |
+	perl -e '
+	    my %Gene;
+	    my @name;
+	    my @seqs;
+	    while ( <> ) {
+	        chomp;
+	        my @line = split/\t/, $_;
+	        my $name = $1 if $line[0] =~ />(.+)/;
+	        $Gene{$name} = $line[1];
+	    }
+	    my $gene_num = %Gene;
+	    if ( $gene_num == 1 ) {
+	        for my $key (keys %Gene) {
+	            print ">$key_$key\n";
+	            print "$Gene{$key}:","\n$Gene{$key}\n";
+	        }
+	    }
+	    else {
+	        for my $key (sort {$a cmp $b} keys %Gene) {
+	            push @name, $key;
+	            push @seqs, $Gene{$key};
+	        }
+            my $id = join ("_", @name);
+            print ">$id\n";
+            print join (":\n", @seqs);
+            print "\n";
+        }
+	' > tmp && mv tmp WWS_PPI/${file}
+done
+
+mkdir -p WWS_PPI/results
+
+ls WWS_PPI |
+    parallel -j 1 -k --ungroup '
+        colabfold_batch \
+	        --model-type alphafold2_multimer_v3 \
+	        --local-pdb-path ~/share/af_dataset/pdb_mmcif \
+	        --amber --use-gpu-relax --zip --num-recycle 3 \
+	        WWS_PPI/{} ./WWS_PPI/results/
+    '
 ```
