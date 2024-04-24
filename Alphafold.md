@@ -240,6 +240,87 @@ bash run_alphafold.sh \
 	-c full_dbs \
 	-l 3 \
 	-b true
+
+bash run_alphafold.sh \
+    -d /home/jyq/share/af_dataset \
+    -o /home/jyq/data/AF_related/ \
+    -f /home/jyq/data/AF_related/136_FL.fa \
+    -t 2024-03-04 \
+    -m multimer \
+    -b true \
+    -r false \
+    -l 1
+
+bash run_alphafold.sh \
+	-d /home/jyq/share/af_dataset \
+	-o /home/jyq/data/AF_related/GBG91711/ \
+	-f /home/jyq/data/AF_related/GBG91711.fa \
+	-t 2022-10-05 \
+	-m monomer \
+	-n 5 \
+	-c full_dbs \
+	-l 3 \
+	-b true
+
+ls ~/data/AF_related/Fxy/algae_*.fa |
+    parallel -j 1 -k --ungroup '
+        bash run_alphafold.sh \
+	        -d /home/jyq/share/af_dataset \
+	        -o /home/jyq/data/AF_related/Fxy_result \
+	        -f {} \
+            -t 2022-10-05 \
+            -m monomer \
+            -n 5 \
+            -c full_dbs \
+            -l 3 \
+            -b true
+    '
+
+bash run_alphafold.sh \
+	-d /home/jyq/share/af_dataset \
+	-o /home/jyq/data/AF_related/Fxy_result \
+	-f /home/jyq/data/AF_related/Fxy/algal_bulang_rnl.fasta \
+	-t 2024-04-11 \
+	-m monomer \
+	-n 5 \
+	-c full_dbs \
+	-l 3 \
+	-b true
+
+bash run_alphafold.sh \
+	-d /home/jyq/share/af_dataset \
+	-o /home/jyq/data/AF_related/Fxy_result \
+	-f /home/jyq/data/AF_related/Fxy/atADR1_117.fasta \
+	-t 2024-04-11 \
+	-m monomer \
+	-n 5 \
+	-c full_dbs \
+	-l 3 \
+	-b true
+
+bash run_alphafold.sh \
+	-d /home/jyq/share/af_dataset \
+	-o /home/jyq/data/AF_related/Fxy_result \
+	-f /home/jyq/data/AF_related/Fxy/cz136_301.fa \
+	-t 2024-04-11 \
+	-m monomer \
+	-n 5 \
+	-c full_dbs \
+	-l 3 \
+	-b true
+
+bash run_alphafold.sh \
+	-d /home/jyq/share/af_dataset \
+	-o /home/jyq/data/AF_related/Fxy_result \
+	-f /home/jyq/data/AF_related/Fxy/cz136_FL.fa \
+	-t 2024-04-11 \
+	-m monomer \
+	-n 5 \
+	-c full_dbs \
+	-l 3 \
+	-b true
+```
+
 - Using colabfold
 
 ```bash
