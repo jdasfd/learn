@@ -88,4 +88,8 @@ cat line_outgroup.lst |
     parallel -j 3 '
         orthofinder -f {} -t 4 -a 4 -X -o {}/result_{}
     '
+
+bsub -q mpi -n 24 -J "ortho" -o . "cat line_outgroup.lst | parallel -j 4 'python3 ~/share/OrthoFinder/orthofinder.py -f {} -t 4 -a 4 -X -o {}/result_{}'"
+
+#10441576
 ```
