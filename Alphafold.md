@@ -384,11 +384,24 @@ done
 mkdir -p WWS_PPI/results
 
 ls WWS_PPI |
+    perl -pe 's/\.fa$//' |
+    parallel -j 1 -k '
+        mkdir -p WWS_PPI/results/{}
+    '
+
+ls WWS_PPI |
+    grep -v "results" |
+    perl -pe 's/\.fa$//' |
+    parallel -j 1 -k '
+        mv WWS_PPI/results/{}_
+    '
+
+ls WWS_PPI/*.fa |
     parallel -j 1 -k --ungroup '
         colabfold_batch \
 	        --model-type alphafold2_multimer_v3 \
 	        --local-pdb-path ~/share/af_dataset/pdb_mmcif \
 	        --amber --use-gpu-relax --zip --num-recycle 3 \
-	        WWS_PPI/{} ./WWS_PPI/results/
+	        {} ./WWS_PPI/results/{/.}/
     '
 ```
