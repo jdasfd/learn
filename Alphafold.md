@@ -319,6 +319,17 @@ bash run_alphafold.sh \
 	-c full_dbs \
 	-l 3 \
 	-b true
+
+bash run_alphafold.sh \
+	-d /mnt/DataDisk/af_dataset \
+	-o /home/jyq/data/AF_related/Results \
+	-f /home/jyq/data/AF_related/SEQS/GFPNRG1.fa \
+	-t 2024-04-11 \
+	-m monomer \
+	-n 5 \
+	-c full_dbs \
+	-l 3 \
+	-b true
 ```
 
 - Using colabfold
