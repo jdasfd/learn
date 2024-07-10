@@ -438,3 +438,48 @@ ls WWS_PPI/*.fa |
 	        {} ./WWS_PPI/results/{/.}/
     '
 ```
+
+- Results
+
+```bash
+cd ~/data/AF_related/WWS_PPI
+
+# score of colab results
+for colab in $(find -name "*.result.zip")
+do
+    name=$(echo "${colab}" | perl -pe 's/.+\/(.+?)\.result\.zip/$1/')
+    dir=$(echo "${colab}" | perl -pe 's/(.+)\/.+?\.result\.zip/$1/')
+    echo "==> ${name}"
+    cd ${dir}
+    zip -sf ${name}.result.zip |
+        grep "scores" |
+        perl -pe 's/^\s+//' |
+        parallel -j 1 -k '
+            unzip -c *.result.zip {} |
+                perl -nle '\''
+                    print "$1\t$2\t",0.2*$1+0.8*$2 if /"ptm":\s+?(\d+?\.\d+?),\s+?"iptm":\s+?(\d+?\.\d+?)/;
+                '\'' |
+                awk -v FILE={.} '\''{print (FILE"\t"$0)}'\''
+        ' |
+        sed '1iFile\tptm\tiptm\tsum' \
+        > ~/data/AF_related/WWS_PPI/${name}.scores.tsv
+    cd ~/data/AF_related/WWS_PPI/
+done
+
+ls *.scores.tsv | wc -l
+#49
+
+# sum
+ls *.scores.tsv |
+    perl -pe 's/\.scores\.tsv$//' |
+    parallel -j 1 -k '
+        cat {}.scores.tsv |
+            tsv-summarize -H --max sum |
+            sed 1d |
+            awk -v file={} '\''{print (file"\t"$0)}'\''
+    ' |
+    sed '1iFile\tSum' \
+    > WWS_PPI.result.tsv
+
+cat WWS_PPI.result.tsv | mlr --itsv --ocsv cat > WWS_PPI.result.csv
+```
