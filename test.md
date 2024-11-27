@@ -149,3 +149,50 @@ cat accession.taxid.tsv |
 
 cat 731_species.taxo.tsv | wc -l
 ```
+
+```bash
+cat genome.lst |
+    parallel -j 1 -k '
+        for group in TNL CNL RNL
+        do
+            echo "==> {} $group"
+            cat 808/{}_${group}_seq.fa |
+                perl -nle '\''print if /^>/'\'' |
+                wc -l |
+                awk -v GENOM={} -v GROUP=${group} '\''{print (GENOM","GROUP","$0)}'\'' \
+                >> 155_NLR.csv
+        done
+    '
+```
+
+```bash
+cat 38_brassica_name.txt |
+    parallel -j 1 -k '
+    for group in TNL CNL RNL
+    do
+        echo "==> {} $group"
+        cat /home/efg/DataDisk/sangcw/1_pair_research/angiosperm/808/{}_${group}_seq.fa |
+            perl -nle '\''print if /^>/'\'' |
+            wc -l |
+            awk -v GENOM={} -v GROUP=${group} '\''{print (GENOM","GROUP","$0)}'\'' \
+            >> 38_brassica_NLR.csv
+    done
+    '
+```
+
+```bash
+blastp -outfmt 6 -evalue 0.00001 -num_threads 8 -max_target_seqs 5
+ParaAT.pl -m muscle -f axt
+```
+
+```bash
+./configure --prefix=/share/home/zhuqingshao/software/local/ CPPFLAGS="-I/share/home/zhuqingshao/software/local/include/"
+```
+
+```bash
+cat Total_RLK.ECD.tsv | grep "^CL_" | tsv-filter --str-eq 2:None | wc -l
+#1895
+
+find ../DOMAIN -name "Pro.final.domain.tsv" | parallel -j 1 'cat {}' | tsv-join -f <(cat Total_RLK.ECD.tsv | tsv-filter --str-eq 2:None | grep "^CL_" | tsv-select -f 1) -k 1 | perl ../scripts/ECD_length.pl
+```
+
