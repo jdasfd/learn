@@ -95,62 +95,6 @@ bsub -q mpi -n 24 -J "ortho" -o . "cat line_outgroup.lst | parallel -j 4 'python
 ```
 
 ```bash
-cd ~/data/test/gqh
-
-cat ~/.nwr/assembly_summary_refseq.txt |
-    grep -v "^##" |
-    perl -pe 's/^#//' |
-    tsv-select -H -f assembly_accession,species_taxid,organism_name |
-    perl -nla -F'\t' -e '
-        /^assembly/ ? print : $F[2] =~ s/\s/_/g && print "$F[0]\t$F[1]\t$F[2]"
-    ' \
-    > assembly_refseq.tsv
-
-cat ~/.nwr/assembly_summary_genbank.txt |
-    grep -v "^##" |
-    perl -pe 's/^#//' |
-    tsv-select -H -f assembly_accession,species_taxid,organism_name |
-    perl -nla -F'\t' -e '
-        /^assembly/ ? print : $F[2] =~ s/\s/_/g && print "$F[0]\t$F[1]\t$F[2]"
-    ' \
-    > assembly_genbank.tsv
-
-perl ~/Scripts/fig_table/xlsx2csv.pl -f species-strain.xlsx -s 731 |
-    cut -d',' -f 2 |
-    perl -pe 's/(.+)_(\d+)$/$1\.$2/' \
-    > accession.lst
-
-cat accession.lst |
-    tsv-join -f assembly_refseq.tsv -k 1 -a 2,3 \
-    > accession.taxid.tsv
-
-cat accession.lst |
-    tsv-join -f assembly_genbank.tsv -k 1 -a 2,3 \
-    >> accession.taxid.tsv
-
-cat accession.taxid.tsv | wc -l
-#725
-
-cat accession.taxid.tsv |
-    parallel -j 1 -k --colsep "\t" '
-        nwr lineage {2} |
-            tsv-select -f 1,2 |
-            perl -nle '\''
-                my @array = split/\t/, $_;
-                my @tax_level = qw(kingdom phylum class order family genus species);
-                if ( grep {$_ eq $array[0]} @tax_level ) {
-                    print "$array[0]\t$array[1]";
-                }
-            '\'' |
-            paste -sd "\t" |
-            awk -v ACC={1} '\''{print ACC"\t"$0}'\''
-    ' \
-    > 731_species.taxo.tsv
-
-cat 731_species.taxo.tsv | wc -l
-```
-
-```bash
 cat genome.lst |
     parallel -j 1 -k '
         for group in TNL CNL RNL
@@ -162,21 +106,6 @@ cat genome.lst |
                 awk -v GENOM={} -v GROUP=${group} '\''{print (GENOM","GROUP","$0)}'\'' \
                 >> 155_NLR.csv
         done
-    '
-```
-
-```bash
-cat 38_brassica_name.txt |
-    parallel -j 1 -k '
-    for group in TNL CNL RNL
-    do
-        echo "==> {} $group"
-        cat /home/efg/DataDisk/sangcw/1_pair_research/angiosperm/808/{}_${group}_seq.fa |
-            perl -nle '\''print if /^>/'\'' |
-            wc -l |
-            awk -v GENOM={} -v GROUP=${group} '\''{print (GENOM","GROUP","$0)}'\'' \
-            >> 38_brassica_NLR.csv
-    done
     '
 ```
 
