@@ -200,3 +200,42 @@ pdf(opt$out, width = 12, height = 3)
 grid.arrange(plot1, plot2, ncol = 2, layout_matrix = rbind(c(1,1,1,2)))
 dev.off
 ```
+
+## 当WSL2下Terminal光标不显示时（无闪烁）
+
+```bash
+#显示光标
+echo -e "\033[?25h" 
+
+#隐藏光标
+echo -e "\033[?25l"
+```
+
+## pytorch安装bug: "undefined symbol: iJIT_NotifyEvent"
+
+错误原因：mkl包版本不匹配，conda和pip使用不同版本的mkl。
+
+解决方法：降级。
+
+```bash
+conda install mkl=2024.0
+```
+
+## libssl.so.1.1 not found
+
+错误原因：Ubuntu 22.04 默认使用 openssl 3.0，但是仍有大量依赖openssl 1.1的可执行文件。
+
+解决方法：手动安装openssl 1.1。
+
+```bash
+cd /tmp
+wget https://www.openssl.org/source/openssl-1.1.1q.tar.gz
+
+tar xvf openssl-1.1.1q.tar.gz
+cd openssl-1.1.1q
+
+./configure
+make
+make install
+#if everthing is right, the libssl.so.1.1 under /usr/local/lib
+```
