@@ -56,15 +56,15 @@ Using CTRL + w to delete commands until the nearest "space"
 
 3. 使用`chmod`来改变文件的属性，为uzcat这个bash脚本加上可执行权限
 
-   ```bash
-   chmod u+x uzcat.sh
-   ```
+```bash
+chmod u+x uzcat.sh
+```
 
 4. 可以直接在任意路径启动该bash脚本，因为`/bin`已经被添加到了`$PATH`下
 
-   ```bash
-   ./uzcat.sh
-   ```
+```bash
+./uzcat.sh
+```
 
 ## updatedb: can not open a temporary file for `/var/lib/mlocate/mlocate.db'
 
@@ -205,7 +205,7 @@ dev.off
 
 ```bash
 #显示光标
-echo -e "\033[?25h" 
+echo -e "\033[?25h"
 
 #隐藏光标
 echo -e "\033[?25l"
@@ -238,4 +238,68 @@ cd openssl-1.1.1q
 make
 make install
 #if everthing is right, the libssl.so.1.1 under /usr/local/lib
+```
+
+## Ubuntu 20.04桌面环境失效与网络修复
+
+### 通过命令行（TTY）进入系统
+
+- `Ctrl+Alt+F3`进入TTY
+- 使用用户名和密码登入
+
+### 恢复基础网络连接（否则无法使用apt进行修复）
+
+- 通过`ip a`查看网卡，其中如果没有inet的话说明网卡没有连接上网络。启用网卡并获取IP (DHCP)
+
+```bash
+# 查看ip路径
+ip route show
+# 若没有显示说明此时没有连接结果
+
+# 查看网卡状态
+ip link show eno1
+# state DOWN 接口被关闭
+# state UP 有连接但没获取IP
+
+# 启用有限网卡（本机例子为eno1）
+sudo ip link set eno1 up
+
+# 手动请求DHCP IP
+sudo dhclient eno1
+```
+
+### 解决DNS解析问题（适用于内网环境）
+
+- 用能联网的电脑查看某个需要连接的网站的IP地址
+
+```bash
+# 查看能否连接某个网站
+nslookup xxx.xxx.xxx.com/cn
+# Address字段会显示IP
+
+# 添加address到/etc/hosts
+echo "xxx.xxx.xxx.xxx web.com" | sudo tee -a /etc/hosts
+```
+
+### 最终更新apt（通过源）
+
+```bash
+sudo apt update
+```
+
+当然解决过程中包括静态添加解析，静态添加IP。
+
+若显示`dhclient: command not found`，则可能无法用此方式联网。
+
+### 依赖包如果出现问题
+
+```bash
+sudo apt install aptitude
+sudo aptitude install xxx
+# aptitude会主动提供修复版本的版本
+```
+
+```bash
+sudo modprobe -r e1000e
+sudo modprobe e1000e
 ```
