@@ -56,13 +56,12 @@ Using CTRL + w to delete commands until the nearest "space"
 
 3. 使用`chmod`来改变文件的属性，为uzcat这个bash脚本加上可执行权限
 
-```bash
-chmod u+x uzcat.sh
-```
-
 4. 可以直接在任意路径启动该bash脚本，因为`/bin`已经被添加到了`$PATH`下
 
 ```bash
+# step 3:
+chmod u+x uzcat.sh
+# step 4:
 ./uzcat.sh
 ```
 
@@ -302,4 +301,49 @@ sudo aptitude install xxx
 ```bash
 sudo modprobe -r e1000e
 sudo modprobe e1000e
+```
+
+## Tmux to replace screen
+
+### Installation
+
+```bash
+cbp install tmux
+```
+
+### Usage (sessions related)
+
+```bash
+# open a new session
+tmux new -s [session]
+
+# list all sessions
+tmux ls
+
+# get into an existed session
+tmux attach -t [session]
+# or
+tmux a -t [session]
+
+# force detach
+tmux a -d -t [session]
+
+# detach
+# Ctrl+b then d
+
+# delete seesion
+tmux kill-session -t [session]
+```
+
+### Usage (inside a session)
+
+```txt
+Ctrl+b and then following:
+c: open a new window
+w: list all windows
+0~9: quick locate to a window
+n: the next window
+p: the previous window
+&: close this window
+,: rename this window
 ```
